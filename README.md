@@ -15,11 +15,11 @@
 
 ## 참조 문서
 
-- [기능 명세서]()
-- [API 명세서]()
+- [기능 명세서](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3/blob/main/docs/%EA%B8%B0%EB%8A%A5-%EB%AA%85%EC%84%B8%EC%84%9C.md)
+- [API 명세서](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3/blob/main/docs/API-%EB%AA%85%EC%84%B8%EC%84%9C.md)
 
-## 참조 리포지토리
+## 리포지토리
 
-- [디자인 리포지토리]()
+- [디자인 리포지토리](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3_design)
 - [프론트 리포지토리]()
-- [백엔드 리포지토리]()
+- [백엔드 리포지토리](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3-Backend)
