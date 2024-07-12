@@ -23,5 +23,5 @@ QR 을 통해 들어가면 먼저 자신의 정보를 등록하고, 다른 사�
 ## 리포지토리
 
 - [디자인 리포지토리](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3_design)
-- [프론트 리포지토리]()
+- [프론트 리포지토리](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3-Frontend)
 - [백엔드 리포지토리](https://github.com/HICC-2024-PROJECT-PRESENTATION-CONTEST/Team3-Backend)
