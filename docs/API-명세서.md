@@ -10,10 +10,27 @@ API 요청과 응답에서 페이로드가 필요한 경우 기본적으로 JSON
 
 API URL 의 path 에서 `:val` 과 같은 형태의 표기는 변수를 의미합니다. 예를 들어 [프로필 정보 가져오기](#get-profilesuid-프로필-정보-가져오기) 를 실제 사용할 때의 URL 은 `/profiles/00000000-0000-0000-0000-000000000000` 형태로 만들어 사용하면 됩니다.
 
+API 응답은 JSON 형태로 전송됩니다.
+응답의 형태는 다음과 같습니다.
+
+```json
+{
+  "message": "응답 메시지",
+  "data": {
+    // 바디 페이로드...
+  }
+}
+```
+
+- `message` 필드에는 응답 코드에 대한 추가적인 설명이 들어갑니다.
+- `data` 필드에는 응답에 대한 바디 페이로드가 들어갑니다.
+
 ## API
 
 - `/qr`
   - [`POST` QR 생성](#post-qr-qr-생성)
+  - `/qr/:key?redir`
+    - [`GET` QR 사용 (사용자 로그인)](#get-qrkeyredir-qr-사용-사용자-로그인)
 - `/profiles`
   - [`GET` 프로필 목록 가져오기](#get-profiles-프로필-목록-가져오기)
   - [`POST` 새 프로필 생성](#post-profiles-새-프로필-생성)
@@ -30,7 +47,7 @@ API URL 의 path 에서 `:val` 과 같은 형태의 표기는 변수를 의미�
     - `/profiles/:uid/choices`
       - [`GET` 프로필이 / 프로필을 선택한 상대 목록 가져오기](#get-profilesuidchoices-프로필이--프로필을-선택한-상대-목록-가져오기)
       - [`POST` 프로필의 상대 선택](#post-profilesuidchoices-프로필의-상대-선택)
-- `/manage/:key`
+- `/manager-login/:key`
   - [`POST` 관리자 로그인](#post-managekey-관리자-로그인)
 
 ### `POST` `/qr` QR 생성
@@ -51,6 +68,19 @@ API URL 의 path 에서 `:val` 과 같은 형태의 표기는 변수를 의미�
       }
       ```
 
+  - `403` 접근 권한 없음
+  - `500` 서버 오류
+
+### `GET` `/qr/:key?redir` QR 사용 (사용자 로그인)
+
+- 요청
+
+  - 패스 쿼리 페이로드
+    redir: 리다이렉트할 URL
+
+- 응답
+
+  - `302` 리다이렉트
   - `403` 접근 권한 없음
   - `500` 서버 오류
 
