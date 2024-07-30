@@ -123,7 +123,7 @@ API 응답은 JSON 형태로 전송됩니다.
 
 <br><br><br>
 
-### `GET` `/auth/manager-login/:key?redir` 관리자 로그인
+### `GET` `/auth/manager/login/:key?redir` 관리자 로그인
 
 `접근 권한: 없음`
 
