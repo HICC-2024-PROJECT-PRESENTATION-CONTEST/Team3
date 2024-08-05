@@ -2,7 +2,7 @@
 
 ## 요청과 응답
 
-API 요청과 응답에서 페이로드가 필요한 경우 기본적으로 JSON 형태의 페이로드를 사용합니다. 사진 데이터와 같은 경우에만 예외적으로 `application/octet-stream` 형태의 페이로드를 사용합니다.
+API 요청과 응답에서 페이로드가 필요한 경우 기본적으로 JSON 형태의 페이로드를 사용합니다. 사진 데이터와 같은 경우에만 예외적으로 `multipart/form-data` 형태의 페이로드를 사용합니다.
 
 접근 권한 인증은 클라이언트에 저장된 쿠키를 통해 세션 인증을 구현하여 사용합니다.
 
@@ -32,23 +32,25 @@ API 응답은 JSON 형태로 전송됩니다.
 - `/auth/login?redir`
   - [`POST` 사용자 로그인](#post-authloginredir-사용자-로그인)
 - `/auth/manager/login/:key?redir`
-  - [`GET` 관리자 로그인](#get-authmanager-loginkeyredir-관리자-로그인)
+  - [`POST` 관리자 로그인](#post-authloginredir-사용자-로그인)
 - `/profiles`
-  - [`미구현` `GET` 프로필 목록 가져오기](#get-profiles-프로필-목록-가져오기)
+  - [`GET` 프로필 목록 가져오기](#get-profiles-프로필-목록-가져오기)
   - [`POST` 새 프로필 생성](#post-profiles-새-프로필-생성)
   - `/profiles/:uid`
     - [`GET` 프로필 정보 가져오기](#get-profilesuid-프로필-정보-가져오기)
     - [`PATCH` 프로필 정보 수정](#patch-profilesuid-프로필-정보-수정)
     - [`DELETE` 프로필 정보 삭제](#delete-profilesuid-프로필-정보-삭제)
     - `/profiles/:uid/image`
-      - [`미구현` `GET` 프로필 사진 가져오기](#get-profilesuidimage-프로필-사진-가져오기)
-      - [`미구현` `PATCH` 프로필 사진 수정 (업로드)](#patch-profilesuidimage-프로필-사진-수정-업로드)
-      - [`미구현` `DELETE` 프로필 사진 삭제](#delete-profilesuidimage-프로필-사진-삭제)
+      - [`GET` 프로필 사진 가져오기](#get-profilesuidimage-프로필-사진-가져오기)
+      - [`PATCH` 프로필 사진 수정 (업로드)](#patch-profilesuidimage-프로필-사진-수정-업로드)
+      - [`DELETE` 프로필 사진 삭제](#delete-profilesuidimage-프로필-사진-삭제)
     - `/profiles/:uid/recommands`
       - [`GET` 프로필의 추천 상대 목록 가져오기](#get-profilesuidrecommands-프로필의-추천-상대-목록-가져오기)
     - `/profiles/:uid/choices`
       - [`GET` 프로필이 / 프로필을 선택한 상대 목록 가져오기](#get-profilesuidchoices-프로필이--프로필을-선택한-상대-목록-가져오기)
       - [`POST` 프로필의 상대 선택](#post-profilesuidchoices-프로필의-상대-선택)
+    - `/profiles/:uid/message`
+      - [`POST` 프로필의 상대에게 메시지 보내기](#post-profilesuidmessage-프로필의-상대에게-메시지-보내기)
 
 <br><br><br>
 
@@ -83,7 +85,7 @@ API 응답은 JSON 형태로 전송됩니다.
 
 - 요청
 
-  - 패스 쿼리 페이로드
+  - 쿼리 페이로드
 
     redir: 리다이렉트할 URL
 
@@ -101,7 +103,7 @@ API 응답은 JSON 형태로 전송됩니다.
 
 - 요청
 
-  - 패스 쿼리 페이로드
+  - 쿼리 페이로드
 
     redir: 리다이렉트할 URL
 
@@ -118,27 +120,31 @@ API 응답은 JSON 형태로 전송됩니다.
   - `200` 성공
   - `400` 필수 필드 누락
   - `400` 잘못된 필드 형식
-  - `403` 접근 권한 없음
+  - `401` 접근 권한 없음 (로그인 실패)
   - `500` 서버 오류
 
 <br><br><br>
 
-### `GET` `/auth/manager/login/:key?redir` 관리자 로그인
+### `POST` `/auth/manager/login` 관리자 로그인
 
 `접근 권한: 없음`
 
 - 요청
 
-  - 패스 쿼리 페이로드
+  - 바디 페이로드 (JSON)
 
-    redir: 리다이렉트할 URL
+    ```json
+    {
+      "key": "000000"
+    }
+    ```
 
 - 응답
 
   - `200` 성공
   - `400` 필수 필드 누락
   - `400` 잘못된 필드 형식
-  - `403` 접근 권한 없음
+  - `401` 접근 권한 없음 (로그인 실패)
   - `500` 서버 오류
 
 <br><br><br>
@@ -149,13 +155,31 @@ API 응답은 JSON 형태로 전송됩니다.
 
 - 요청
 
-  - 페이로드 없음
+  - 쿼리 페이로드
+
+    - `page` 페이지 (number)
+    - `size` 페이지 당 개수 (number)
+    - `find` 찾을 검색어 (string)
+    - `count` 개수 (boolean)
+
+    쿼리 페이로드를 통해 프로필 목록을 원하는 만큼만 가져올 수 있습니다. `find` 쿼리는 프로필의 이름, 전화번호, 인스타그램 아이디 안에서 `find` 태그의 내용을 검색합니다.
+    `count` 쿼리를 사용하는 경우 `page`와 `size` 값은 무시되고 `find` 쿼리만 적용하여 개수를 셉니다.
+
+    쿼리 예시
+
+    - 대충 힉익명을 찾을 경우
+
+      `/profiles?find=힉익명&page=1&size=20`
+
+    - 전체 프로필 개수를 찾는 경우
+
+      `/profiles?count`
 
 - 응답
 
   - `200` 성공
 
-    - 바디 페이로드 (JSON)
+    - 바디 페이로드 (JSON) (`count` 를 사용하지 않은 경우)
 
       ```json
       [
@@ -163,6 +187,7 @@ API 응답은 JSON 형태로 전송됩니다.
           "uid": "00000000-0000-0000-0000-000000000000",
           "name": "히이익",
           "phone": "01000000000",
+          "instagram": "hiiiiiccccc",
           "gender": "F",
           "birthyear": 2003,
           "birthyear_offset": {
@@ -176,6 +201,14 @@ API 응답은 JSON 형태로 전송됩니다.
           "smoking": false
         }
       ]
+      ```
+
+    - 바디 페이로드 (JSON) (`count` 를 사용하는 경우)
+
+      ```json
+      {
+        "count": 200
+      }
       ```
 
   - `403` 접근 권한 없음
@@ -195,6 +228,7 @@ API 응답은 JSON 형태로 전송됩니다.
     {
       "name": "히이익",
       "phone": "01000000000",
+      "instagram": "hiiiiiccccc",
       "password": "password",
       "gender": "M",
       "birthyear": 2003,
@@ -243,6 +277,7 @@ API 응답은 JSON 형태로 전송됩니다.
         "uid": "00000000-0000-0000-0000-000000000000",
         "name": "히이익",
         "phone": "01000000000",
+        "instagram": "hiiiiiccccc",
         "gender": "M",
         "birthyear": 2003,
         "birthyear_offset": {
@@ -275,6 +310,7 @@ API 응답은 JSON 형태로 전송됩니다.
     {
       "name": "히이익",
       "phone": "01000000000",
+      "instagram": "hiiiiiccccc",
       "gender": "M",
       "birthyear": 2003,
       "birthyear_offset": {
@@ -324,7 +360,9 @@ API 응답은 JSON 형태로 전송됩니다.
 
 - 요청
 
-  - 페이로드 없음
+  - 쿼리 페이로드
+
+    - `size` 사진의 크기를 지정합니다. 200, 900, 1500 을 지정할 수 있습니다. 지정하지 않으면 기본값은 900입니다.
 
 - 응답
 
@@ -344,11 +382,15 @@ API 응답은 JSON 형태로 전송됩니다.
 
 - 요청
 
-  - 바디 페이로드 (application/octet-stream)
+  - 바디 페이로드 (multipart/form-data)
 
     ```
     image=steam:data
     ```
+
+    사용 가능한 이미지 mime 은 `image/jpeg`, `image/png`, `image/webp` 입니다. 서버에 저장될 때는 전부 리사이즈된 jpg 파일로 저장됩니다.
+
+    업로드 예시 코드가 백엔드 리포지토리 `src/publix/examples/image-upload.html` 에 있습니다.
 
 - 응답
 
@@ -396,6 +438,7 @@ API 응답은 JSON 형태로 전송됩니다.
         {
           "uid": "00000000-0000-0000-0000-000000000000",
           "name": "히이익",
+          "instagram": "hiiiiiccccc",
           "gender": "F",
           "birthyear": 2003,
           "height": 165,
@@ -433,7 +476,7 @@ API 응답은 JSON 형태로 전송됩니다.
           {
             "uid": "00000000-0000-0000-0000-000000000000",
             "name": "히이익",
-            "phone": "01000000000",
+            "instagram": "hiiiiiccccc",
             "gender": "F",
             "birthyear": 2003,
             "height": 165,
@@ -447,7 +490,7 @@ API 응답은 JSON 형태로 전송됩니다.
           {
             "uid": "00000000-0000-0000-0000-000000000000",
             "name": "히이익",
-            "phone": "01000000000",
+            "instagram": "hiiiiiccccc",
             "gender": "F",
             "birthyear": 2003,
             "height": 158,
@@ -476,7 +519,7 @@ API 응답은 JSON 형태로 전송됩니다.
 
     ```json
     {
-      "uid": "00000000-0000-0000-0000-000000000000"
+      "target": "00000000-0000-0000-0000-000000000000"
     }
     ```
 
@@ -487,4 +530,30 @@ API 응답은 JSON 형태로 전송됩니다.
   - `400` 잘못된 필드 형식
   - `403` 접근 권한 없음
   - `404` 프로필 정보를 찾을 수 없음
+  - `409` 상대 선택 횟수 없음
+  - `500` 서버 오류
+
+### `POST` `/profiles/:uid/message` 프로필의 상대에게 메시지 보내기
+
+`접근 권한: 사용자 (본인), 관리자 (타인)`
+
+- 요청
+
+  - 바디 페이로드 (JSON)
+
+    ```json
+    {
+      "target": "00000000-0000-0000-0000-000000000000",
+      "message": "메시지 내용"
+    }
+    ```
+
+- 응답
+
+  - `200` 성공
+  - `400` 필수 필드 누락
+  - `400` 잘못된 필드 형식
+  - `403` 접근 권한 없음
+  - `404` 프로필 정보를 찾을 수 없음
+  - `409` 메시지 전송 횟수 없음
   - `500` 서버 오류
