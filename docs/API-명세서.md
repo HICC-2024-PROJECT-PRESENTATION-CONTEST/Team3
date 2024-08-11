@@ -484,11 +484,15 @@ API 응답은 JSON 형태로 전송됩니다.
             "mbti": "ICBM",
             "looklike": "MISSILE",
             "smoking": false
+          },
+          {
+            "uid": "00000000-0000-0000-0000-000000000001",
+            "delete": true
           }
         ],
         "choices_from": [
           {
-            "uid": "00000000-0000-0000-0000-000000000000",
+            "uid": "00000000-0000-0000-0000-000000000002",
             "name": "히이익",
             "instagram": "hiiiiiccccc",
             "gender": "F",
@@ -498,6 +502,10 @@ API 응답은 JSON 형태로 전송됩니다.
             "mbti": "ICBM",
             "looklike": "MISSILE",
             "smoking": true
+          },
+          {
+            "uid": "00000000-0000-0000-0000-000000000003",
+            "delete": true
           }
         ]
       }
