@@ -288,7 +288,9 @@ API 응답은 JSON 형태로 전송됩니다.
         "major": "자율전공",
         "mbti": "ICBM",
         "looklike": "MISSILE",
-        "smoking": false
+        "smoking": false,
+        "choicescount": 1,
+        "messagescount": 1
       }
       ```
 
@@ -309,14 +311,7 @@ API 응답은 JSON 형태로 전송됩니다.
     ```json
     {
       "name": "히이익",
-      "phone": "01000000000",
       "instagram": "hiiiiiccccc",
-      "gender": "M",
-      "birthyear": 2003,
-      "birthyear_offset": {
-        "plus": 3,
-        "minus": 1
-      },
       "height": 175,
       "major": "자율전공",
       "mbti": "ICBM",
